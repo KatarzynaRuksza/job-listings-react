@@ -1,23 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import React, { useState, useEffect } from "react";
+import data from "./data.json";
+import JobList from "./JobList";
+import Header from "./Header";
+import Filters from "./Filters";
 
 function App() {
+  const [filters, setFilters] = useState([]);
+  const [filteredData, setFilteredData] = useState(data);
+
+  useEffect(() => {
+    setFilteredData(data);
+    let filter = filters.map((searchWord) => {
+      return data.filter(
+        (item) =>
+          item.languages.includes(searchWord) ||
+          item.role.includes(searchWord) ||
+          item.level.includes(searchWord)
+      );
+    });
+    filter.map((item) => setFilteredData(item));
+  }, [filters]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header />
+      <Filters setFilters={setFilters} filters={filters} />
+      <JobList
+        filters={filters}
+        setFilters={setFilters}
+        jobData={filteredData.length > 0 ? filteredData : data}
+      />
     </div>
   );
 }
